@@ -18,10 +18,10 @@ node_modules
 
 data/
 .idea/
-README.md
+*.md
 package-lock.json
-privacy.html
-LICENSE.txt
-bucket-uploader.sh
+*.html
+*.txt
 .env.yaml
 index_test.js
+*.sh

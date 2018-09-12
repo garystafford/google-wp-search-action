@@ -34,6 +34,8 @@ const logger = createLogger({
     ]
 });
 
+const IMAGE_BUCKET = process.env.IMAGE_BUCKET;
+
 const SUGGESTION_1 = 'tell me about GCP';
 const SUGGESTION_2 = 'help';
 const SUGGESTION_3 = 'cancel';
@@ -51,7 +53,7 @@ app.intent('Welcome Intent', conv => {
         ` _'Find a post about GCP'_  \n` +
         ` _'I'd like to read about Kubernetes'_  \n` +
         ` _'I'm interested in Docker'_`;
-    const WELCOME_IMAGE = '192x192-gstafford.png';
+    const WELCOME_IMAGE = 'image-15.png';
 
     conv.ask(new SimpleResponse({
         speech: WELCOME_TEXT_SHORT,
@@ -63,7 +65,7 @@ app.intent('Welcome Intent', conv => {
             text: WELCOME_TEXT_LONG,
             title: 'Programmatic Ponderings Search',
             image: new Image({
-                url: `${WELCOME_IMAGE}`,
+                url: `${IMAGE_BUCKET}/${WELCOME_IMAGE}`,
                 alt: 'Programmatic Ponderings Search',
             }),
             display: 'WHITE',
@@ -77,7 +79,7 @@ app.intent('Fallback Intent', conv => {
     const FACTS_LIST = "GCP, AWS, Azure, Kubernetes, Docker, Kafka, PCF";
     const HELP_TEXT_SHORT = 'Need a little help?';
     const HELP_TEXT_LONG = `Some popular topics include: ${FACTS_LIST}.`;
-    const HELP_IMAGE = '192x192-gstafford.png';
+    const HELP_IMAGE = 'image-15.png';
 
     conv.ask(new SimpleResponse({
         speech: HELP_TEXT_LONG,
@@ -89,7 +91,7 @@ app.intent('Fallback Intent', conv => {
             text: HELP_TEXT_LONG,
             title: 'Programmatic Ponderings Search Help',
             image: new Image({
-                url: `${HELP_IMAGE}`,
+                url: `${IMAGE_BUCKET}/${HELP_IMAGE}`,
                 alt: 'Programmatic Ponderings Search',
             }),
             display: 'WHITE',
@@ -102,131 +104,143 @@ app.intent('Fallback Intent', conv => {
 app.intent('Find Post Intent', async (conv, {topic}) => {
     let postTopic = topic.toString();
 
-    const SEARCH_API_RESOURCE = `dismax-search?value=${postTopic}&start=0&size=1&minScore=1`;
-    const SEARCH_API_URL = `http://${SEARCH_API_HOSTNAME}:${SEARCH_API_PORT}/${SEARCH_API_ENDPOINT}/${SEARCH_API_RESOURCE}`;
-    let posts = {};
+    let post = await buildResponseSinglePost(postTopic);
 
-    Request.get(SEARCH_API_URL, (error, response, body) => {
-        if (error) {
-            logger.log({
-                level: 'error',
-                message: `Error: ${error}`
-            });
-        }
-        posts = JSON.parse(body);
-        posts = posts.ElasticsearchPosts;
-        posts.forEach(function (post) {
-            console.log(`${post.post_title} (${post._score.toFixed(2)})`);
-            let post_date = new Date(post.post_date);
-            let options = {year: 'numeric', month: 'long', day: 'numeric'};
-            post_date = post_date.toLocaleDateString('en-EN', options);
-            console.log(post_date);
-        });
-    });
+    if (post === undefined) {
+        topicNotFound(conv, postTopic);
+        return;
+    }
 
+    const POST_TEXT = `The top result for '${postTopic}' is the post, '${post.post_title}', published ${convertDate(post.date)}`;
 
-    // const AZURE_TEXT_SHORT = `Sure, here's a fact about ${fact.title}`;
-    //
-    // conv.ask(new SimpleResponse({
-    //     speech: fact.response,
-    //     text: AZURE_TEXT_SHORT,
-    // }));
-    //
-    // if (conv.hasScreen) {
-    //     conv.ask(new BasicCard({
-    //         text: fact.response,
-    //         title: fact.title,
-    //         image: new Image({
-    //             url: `${IMAGE_BUCKET}/${fact.image}`,
-    //             alt: fact.title,
-    //         }),
-    //         display: 'WHITE',
-    //     }));
-    //
-    //     conv.ask(new Suggestions([SUGGESTION_1, SUGGESTION_2, SUGGESTION_3]));
-    // }
+    conv.ask(new SimpleResponse({
+        speech: POST_TEXT,
+        text: post.title,
+    }));
+
+    if (conv.hasScreen) {
+        conv.ask(new BasicCard({
+            title: post.title,
+            text: POST_TEXT,
+            buttons: new Button({
+                title: post.guid,
+                url: post.guid,
+            }),
+        }));
+
+        conv.ask(new Suggestions([SUGGESTION_1, SUGGESTION_2, SUGGESTION_3]));
+    }
 });
 
 app.intent('Find Multiple Posts Intent', async (conv, {topic}) => {
     let postTopic = topic.toString();
 
-    const SEARCH_API_RESOURCE = `dismax-search?value=${postTopic}&start=0&size=3&minScore=1`;
-    const SEARCH_API_URL = `http://${SEARCH_API_HOSTNAME}:${SEARCH_API_PORT}/${SEARCH_API_ENDPOINT}/${SEARCH_API_RESOURCE}`;
-    let posts = {};
+    let posts = await buildResponseMultiplePosts(postTopic);
 
-    Request.get(SEARCH_API_URL, (error, response, body) => {
-        if (error) {
-            logger.log({
-                level: 'error',
-                message: `Error: ${error}`
-            });
-        }
-        posts = JSON.parse(body);
-        posts = posts.ElasticsearchPosts;
-        posts.forEach(function (post) {
-            console.log(`${post.post_title} (${post._score.toFixed(2)})`);
-            let post_date = new Date(post.post_date);
-            let options = {year: 'numeric', month: 'long', day: 'numeric'};
-            post_date = post_date.toLocaleDateString('en-EN', options);
-            console.log(post_date);
-        });
-    });
+    if (posts === undefined) {
+        topicNotFound(conv, postTopic);
+        return;
+    }
 
+    let post = posts[0];
+    
+    const POST_TEXT = `The top result for '${postTopic}' is the post, '${post.post_title}', published ${convertDate(post.date)}`;
 
-    // const AZURE_TEXT_SHORT = `Sure, here's a fact about ${fact.title}`;
-    //
-    // conv.ask(new SimpleResponse({
-    //     speech: fact.response,
-    //     text: AZURE_TEXT_SHORT,
-    // }));
-    //
-    // if (conv.hasScreen) {
-    //     conv.ask(new BasicCard({
-    //         text: fact.response,
-    //         title: fact.title,
-    //         image: new Image({
-    //             url: `${IMAGE_BUCKET}/${fact.image}`,
-    //             alt: fact.title,
-    //         }),
-    //         display: 'WHITE',
-    //     }));
-    //
-    //     conv.ask(new Suggestions([SUGGESTION_1, SUGGESTION_2, SUGGESTION_3]));
-    // }
+    conv.ask(new SimpleResponse({
+        speech: POST_TEXT,
+        text: post.title,
+    }));
+
+    if (conv.hasScreen) {
+        conv.ask(new BasicCard({
+            title: post.title,
+            text: POST_TEXT,
+            buttons: new Button({
+                title: post.guid,
+                url: post.guid,
+            }),
+        }));
+
+        conv.ask(new Suggestions([SUGGESTION_1, SUGGESTION_2, SUGGESTION_3]));
+    }
 });
 
 /* HELPER FUNCTIONS */
 
-// function buildFactResponse(factToQuery) {
-//     return new Promise((resolve, reject) => {
-//         if (factToQuery.toString().trim() === 'random') {
-//             factToQuery = selectRandomFact();
-//         }
-//
-//         const query = datastore
-//             .createQuery('AzureFact')
-//             .filter('__key__', '=', datastore.key(['AzureFact', factToQuery]));
-//
-//         datastore
-//             .runQuery(query)
-//             .then(results => {
-//                 logger.log({
-//                     level: 'info',
-//                     message: `Entity: ${results[0][0]}`
-//                 });
-//                 resolve(results[0][0]);
-//             })
-//             .catch(err => {
-//                 logger.log({
-//                     level: 'info',
-//                     message: `Error: ${err}`
-//                 });
-//                 reject(`Sorry, I don't know the fact, ${factToQuery}.`);
-//             });
-//     });
-// }
+function buildResponseSinglePost(postTopic) {
+    return new Promise((resolve, reject) => {
+
+        const SEARCH_API_RESOURCE = `dismax-search?value=${postTopic}&start=0&size=1&minScore=1`;
+        const SEARCH_API_URL = `http://${SEARCH_API_HOSTNAME}:${SEARCH_API_PORT}/${SEARCH_API_ENDPOINT}/${SEARCH_API_RESOURCE}`;
+
+        let post = {};
+
+        Request.get(SEARCH_API_URL, (error, response, body) => {
+            if (error) {
+                logger.log({
+                    level: 'error',
+                    message: `Error: ${error}`
+                });
+                reject(`Sorry, I don't know the topic, ${postTopic}.`)
+            }
+            post = JSON.parse(body);
+            post = post.ElasticsearchPosts[0];
+            resolve(post);
+        });
+    });
+}
+
+function buildResponseMultiplePosts(postTopic) {
+    return new Promise((resolve, reject) => {
+
+        const SEARCH_API_RESOURCE = `dismax-search?value=${postTopic}&start=0&size=3&minScore=1`;
+        const SEARCH_API_URL = `http://${SEARCH_API_HOSTNAME}:${SEARCH_API_PORT}/${SEARCH_API_ENDPOINT}/${SEARCH_API_RESOURCE}`;
+
+        let posts = {};
+
+        Request.get(SEARCH_API_URL, (error, response, body) => {
+            if (error) {
+                logger.log({
+                    level: 'error',
+                    message: `Error: ${error}`
+                });
+                reject(`Sorry, I don't know the topic, ${postTopic}.`)
+            }
+            posts = JSON.parse(body);
+            posts = posts.ElasticsearchPosts;
+            resolve(posts);
+        });
+    });
+}
+
+function convertDate(dateString) {
+    let post_date = new Date(dateString);
+    let options = {year: 'numeric', month: 'long', day: 'numeric'};
+    dateString = post_date.toLocaleDateString('en-EN', options);
+    return dateString;
+}
+
+function topicNotFound(conv, postTopic) {
+    const NOT_FOUND_TEXT = `Sorry, I cannot find any posts for the topic '${postTopic}'`;
+
+    conv.ask(new SimpleResponse({
+        speech: NOT_FOUND_TEXT,
+        text: NOT_FOUND_TEXT,
+    }));
+
+    if (conv.hasScreen) {
+        conv.ask(new BasicCard({
+            title: `Topic Not Found`,
+            text: NOT_FOUND_TEXT,
+        }));
+
+        conv.ask(new Suggestions([SUGGESTION_1, SUGGESTION_2, SUGGESTION_3]));
+    }
+
+}
+
 
 
 /* ENTRY POINT */
 
-exports.dialogflowBlogSearchFulfillment = functions.https.onRequest(app);
+exports.functionBlogSearchAction = functions.https.onRequest(app);
