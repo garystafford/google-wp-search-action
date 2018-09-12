@@ -8,6 +8,7 @@
 
 const {
     dialogflow,
+    Button,
     Suggestions,
     BasicCard,
     SimpleResponse,
@@ -115,16 +116,17 @@ app.intent('Find Post Intent', async (conv, {topic}) => {
 
     conv.ask(new SimpleResponse({
         speech: POST_TEXT,
-        text: post.title,
+        // text: post.title,
     }));
 
     if (conv.hasScreen) {
         conv.ask(new BasicCard({
             title: post.title,
-            text: POST_TEXT,
+            text: post_excerpt,
             buttons: new Button({
-                title: post.guid,
+                title: `Read the post...`,
                 url: post.guid,
+
             }),
         }));
 
@@ -143,7 +145,7 @@ app.intent('Find Multiple Posts Intent', async (conv, {topic}) => {
     }
 
     let post = posts[0];
-    
+
     const POST_TEXT = `The top result for '${postTopic}' is the post, '${post.post_title}', published ${convertDate(post.date)}`;
 
     conv.ask(new SimpleResponse({
@@ -216,8 +218,7 @@ function buildResponseMultiplePosts(postTopic) {
 function convertDate(dateString) {
     let post_date = new Date(dateString);
     let options = {year: 'numeric', month: 'long', day: 'numeric'};
-    dateString = post_date.toLocaleDateString('en-EN', options);
-    return dateString;
+    return  post_date.toLocaleDateString('en-EN', options);
 }
 
 function topicNotFound(conv, postTopic) {
