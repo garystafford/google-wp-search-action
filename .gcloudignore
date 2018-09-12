@@ -16,7 +16,6 @@
 node_modules
 #!include:.gitignore
 
-pics/
 data/
 .idea/
 README.md
@@ -25,3 +24,4 @@ privacy.html
 LICENSE.txt
 bucket-uploader.sh
 .env.yaml
+index_test.js
