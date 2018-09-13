@@ -12,7 +12,6 @@ const {
     Suggestions,
     BasicCard,
     SimpleResponse,
-    Image,
     List
 } = require('actions-on-google');
 const Request = require("request");
@@ -36,15 +35,13 @@ const logger = createLogger({
     ]
 });
 
-const IMAGE_BUCKET = process.env.IMAGE_BUCKET;
-
-const SUGGESTION_1 = 'tell me about GCP';
+const SUGGESTION_1 = 'tell me about kubernetes';
 const SUGGESTION_2 = 'help';
 const SUGGESTION_3 = 'cancel';
 
-const SEARCH_API_HOSTNAME = process.env.SEARCH_API_HOSTNAME || 'api.chatbotzlabs.com';
-const SEARCH_API_PORT = process.env.SEARCH_API_PORT || '80';
-const SEARCH_API_ENDPOINT = process.env.SEARCH_API_ENDPOINT || 'blog/api/v1/elastic/';
+const SEARCH_API_HOSTNAME = process.env.SEARCH_API_HOSTNAME;
+const SEARCH_API_PORT = process.env.SEARCH_API_PORT;
+const SEARCH_API_ENDPOINT = process.env.SEARCH_API_ENDPOINT;
 
 /* INTENT HANDLERS */
 
@@ -55,7 +52,6 @@ app.intent('Welcome Intent', conv => {
         ` _'Find a post about GCP'_  \n` +
         ` _'I'd like to read about Kubernetes'_  \n` +
         ` _'I'm interested in Docker'_`;
-    const WELCOME_IMAGE = 'image-15.png';
 
     conv.ask(new SimpleResponse({
         speech: WELCOME_TEXT_SHORT,
@@ -66,11 +62,6 @@ app.intent('Welcome Intent', conv => {
         conv.ask(new BasicCard({
             text: WELCOME_TEXT_LONG,
             title: 'Programmatic Ponderings Search',
-            image: new Image({
-                url: `${IMAGE_BUCKET}/${WELCOME_IMAGE}`,
-                alt: 'Programmatic Ponderings Search',
-            }),
-            display: 'WHITE',
         }));
 
         conv.ask(new Suggestions([SUGGESTION_1, SUGGESTION_2, SUGGESTION_3]));
@@ -81,7 +72,6 @@ app.intent('Fallback Intent', conv => {
     const FACTS_LIST = "GCP, AWS, Azure, Kubernetes, Docker, Kafka, PCF";
     const HELP_TEXT_SHORT = 'Need a little help?';
     const HELP_TEXT_LONG = `Some popular topics include: ${FACTS_LIST}.`;
-    const HELP_IMAGE = 'image-15.png';
 
     conv.ask(new SimpleResponse({
         speech: HELP_TEXT_LONG,
@@ -92,11 +82,6 @@ app.intent('Fallback Intent', conv => {
         conv.ask(new BasicCard({
             text: HELP_TEXT_LONG,
             title: 'Programmatic Ponderings Search Help',
-            image: new Image({
-                url: `${IMAGE_BUCKET}/${HELP_IMAGE}`,
-                alt: 'Programmatic Ponderings Search',
-            }),
-            display: 'WHITE',
         }));
 
         conv.ask(new Suggestions([SUGGESTION_1, SUGGESTION_2, SUGGESTION_3]));
@@ -192,30 +177,7 @@ app.intent('actions.intent.OPTION', (conv, params, option) => {
 
 /* HELPER FUNCTIONS */
 
-// function buildResponseSinglePost(postTopic) {
-//     return new Promise((resolve, reject) => {
-//
-//         const SEARCH_API_RESOURCE = `dismax-search?value=${postTopic}&start=0&size=1&minScore=1`;
-//         const SEARCH_API_URL = `http://${SEARCH_API_HOSTNAME}:${SEARCH_API_PORT}/${SEARCH_API_ENDPOINT}/${SEARCH_API_RESOURCE}`;
-//
-//         let post = {};
-//
-//         Request.get(SEARCH_API_URL, (error, response, body) => {
-//             if (error) {
-//                 logger.log({
-//                     level: 'error',
-//                     message: `Error: ${error}`
-//                 });
-//                 reject(`Sorry, I don't know the topic, ${postTopic}.`)
-//             }
-//             post = JSON.parse(body);
-//             post = post.ElasticsearchPosts[0];
-//             resolve(post);
-//         });
-//     });
-// }
-
-function getsPosts(postTopic, responseSize) {
+function getsPosts(postTopic, responseSize = 1) {
     return new Promise((resolve, reject) => {
 
         const SEARCH_API_RESOURCE = `dismax-search?value=${postTopic}&start=0&size=${responseSize}&minScore=1`;
