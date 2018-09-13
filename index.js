@@ -91,9 +91,9 @@ app.intent('Fallback Intent', conv => {
 app.intent('Find Post Intent', async (conv, {topic}) => {
     let postTopic = topic.toString();
 
-    let posts = await getsPosts(postTopic, 1);
+    let posts = await getPosts(postTopic, 1);
 
-    if (posts === undefined) {
+    if (posts.length < 1) {
         topicNotFound(conv, postTopic);
         return;
     }
@@ -126,32 +126,27 @@ app.intent('Find Post Intent', async (conv, {topic}) => {
 app.intent('Find Multiple Posts Intent', async (conv, {topic}) => {
     let postTopic = topic.toString();
 
-    let posts = await getsPosts(postTopic, 5);
+    let posts = await getPosts(postTopic, 5);
 
-    if (posts === undefined) {
+    if (posts.length < 1) {
         topicNotFound(conv, postTopic);
         return;
     }
 
-    let post = posts[0];
-    let formattedDate = convertDate(post.post_date);
-    const POST_SPOKEN = `The top result for '${postTopic}' is the post, '${post.post_title}', published ${formattedDate}`;
+    const POST_SPOKEN = `Sure, here's posts about '${postTopic}'`;
 
     conv.ask(new SimpleResponse({
         speech: POST_SPOKEN,
-        text: post.title,
     }));
 
     let itemsArray = {};
 
     posts.forEach(function (post) {
         itemsArray[post.ID] = {
-            title: post.ID.toString(),
+            title: `Post ID ${post.ID}`,
             description: post.post_title,
         };
     });
-
-    console.info(itemsArray.toString());
 
     if (conv.hasScreen) {
         conv.ask(new List({
@@ -163,21 +158,76 @@ app.intent('Find Multiple Posts Intent', async (conv, {topic}) => {
     }
 });
 
-app.intent('actions.intent.OPTION', (conv, params, option) => {
-    let response = 'You did not select any item';
-    if (option) {
-        response = option;
+app.intent('Find By ID Intent', async (conv, {topic}) => {
+    let postId = topic.toString();
+    let post = await getPostById(postId);
+
+    if (post === undefined) {
+        topicNotFound(conv, postId);
+        return;
     }
+
+    let formattedDate = convertDate(post.post_date);
+    const POST_SPOKEN = `Sure, here's Post ${postId}`;
+    const POST_TEXT = `_'${post.post_excerpt}'_   \nPublished: ${formattedDate}`;
+
     conv.ask(new SimpleResponse({
-        speech: response,
-        text: response,
+        speech: POST_SPOKEN,
+        text: post.title,
     }));
+
+    if (conv.hasScreen) {
+        conv.ask(new BasicCard({
+            title: post.post_title,
+            text: POST_TEXT,
+            buttons: new Button({
+                title: `Read Post`,
+                url: post.guid,
+
+            }),
+        }));
+
+        conv.ask(new Suggestions([SUGGESTION_1, SUGGESTION_2, SUGGESTION_3]));
+    }
+});
+
+app.intent('actions.intent.OPTION', async (conv, params, option) => {
+    let postId = option.toString();
+    let post = await getPostById(postId);
+
+    if (post === undefined) {
+        topicNotFound(conv, postId);
+        return;
+    }
+
+    let formattedDate = convertDate(post.post_date);
+    const POST_SPOKEN = `Sure, here's Post ${postId}`;
+    const POST_TEXT = `_'${post.post_excerpt}'_   \nPublished: ${formattedDate}`;
+
+    conv.ask(new SimpleResponse({
+        speech: POST_SPOKEN,
+        text: post.title,
+    }));
+
+    if (conv.hasScreen) {
+        conv.ask(new BasicCard({
+            title: post.post_title,
+            text: POST_TEXT,
+            buttons: new Button({
+                title: `Read Post`,
+                url: post.guid,
+
+            }),
+        }));
+
+        conv.ask(new Suggestions([SUGGESTION_1, SUGGESTION_2, SUGGESTION_3]));
+    }
 });
 
 
 /* HELPER FUNCTIONS */
 
-function getsPosts(postTopic, responseSize = 1) {
+function getPosts(postTopic, responseSize = 1) {
     return new Promise((resolve, reject) => {
 
         const SEARCH_API_RESOURCE = `dismax-search?value=${postTopic}&start=0&size=${responseSize}&minScore=1`;
@@ -195,6 +245,27 @@ function getsPosts(postTopic, responseSize = 1) {
             }
             posts = JSON.parse(body);
             posts = posts.ElasticsearchPosts;
+            resolve(posts);
+        });
+    });
+}
+
+function getPostById(postId) {
+    return new Promise((resolve, reject) => {
+
+        const SEARCH_API_RESOURCE = `${postId}`;
+        const SEARCH_API_URL = `http://${SEARCH_API_HOSTNAME}:${SEARCH_API_PORT}/${SEARCH_API_ENDPOINT}/${SEARCH_API_RESOURCE}`;
+        let posts = {};
+
+        Request.get(SEARCH_API_URL, (error, response, body) => {
+            if (error) {
+                logger.log({
+                    level: 'error',
+                    message: `Error: ${error}`
+                });
+                reject(`Sorry, I don't know the topic, ${postTopic}.`)
+            }
+            posts = JSON.parse(body);
             resolve(posts);
         });
     });
