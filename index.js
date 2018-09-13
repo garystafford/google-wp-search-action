@@ -13,6 +13,7 @@ const {
     BasicCard,
     SimpleResponse,
     Image,
+    List
 } = require('actions-on-google');
 const Request = require("request");
 const functions = require('firebase-functions');
@@ -105,26 +106,29 @@ app.intent('Fallback Intent', conv => {
 app.intent('Find Post Intent', async (conv, {topic}) => {
     let postTopic = topic.toString();
 
-    let post = await buildResponseSinglePost(postTopic);
+    let posts = await getsPosts(postTopic, 1);
 
-    if (post === undefined) {
+    if (posts === undefined) {
         topicNotFound(conv, postTopic);
         return;
     }
 
-    const POST_TEXT = `The top result for '${postTopic}' is the post, '${post.post_title}', published ${convertDate(post.date)}`;
+    let post = posts[0];
+    let formattedDate = convertDate(post.post_date);
+    const POST_SPOKEN = `The top result for '${postTopic}' is the post, '${post.post_title}', published ${formattedDate}`;
+    const POST_TEXT = `_'${post.post_excerpt}'_   \nPublished: ${formattedDate}`;
 
     conv.ask(new SimpleResponse({
-        speech: POST_TEXT,
-        // text: post.title,
+        speech: POST_SPOKEN,
+        text: post.title,
     }));
 
     if (conv.hasScreen) {
         conv.ask(new BasicCard({
-            title: post.title,
-            text: post_excerpt,
+            title: post.post_title,
+            text: POST_TEXT,
             buttons: new Button({
-                title: `Read the post...`,
+                title: `Read Post`,
                 url: post.guid,
 
             }),
@@ -137,7 +141,7 @@ app.intent('Find Post Intent', async (conv, {topic}) => {
 app.intent('Find Multiple Posts Intent', async (conv, {topic}) => {
     let postTopic = topic.toString();
 
-    let posts = await buildResponseMultiplePosts(postTopic);
+    let posts = await getsPosts(postTopic, 5);
 
     if (posts === undefined) {
         topicNotFound(conv, postTopic);
@@ -145,57 +149,76 @@ app.intent('Find Multiple Posts Intent', async (conv, {topic}) => {
     }
 
     let post = posts[0];
-
-    const POST_TEXT = `The top result for '${postTopic}' is the post, '${post.post_title}', published ${convertDate(post.date)}`;
+    let formattedDate = convertDate(post.post_date);
+    const POST_SPOKEN = `The top result for '${postTopic}' is the post, '${post.post_title}', published ${formattedDate}`;
 
     conv.ask(new SimpleResponse({
-        speech: POST_TEXT,
+        speech: POST_SPOKEN,
         text: post.title,
     }));
 
+    let itemsArray = {};
+
+    posts.forEach(function (post) {
+        itemsArray[post.ID] = {
+            title: post.ID.toString(),
+            description: post.post_title,
+        };
+    });
+
+    console.info(itemsArray.toString());
+
     if (conv.hasScreen) {
-        conv.ask(new BasicCard({
-            title: post.title,
-            text: POST_TEXT,
-            buttons: new Button({
-                title: post.guid,
-                url: post.guid,
-            }),
+        conv.ask(new List({
+            title: 'Top Results',
+            items: itemsArray
         }));
 
         conv.ask(new Suggestions([SUGGESTION_1, SUGGESTION_2, SUGGESTION_3]));
     }
 });
 
+app.intent('actions.intent.OPTION', (conv, params, option) => {
+    let response = 'You did not select any item';
+    if (option) {
+        response = option;
+    }
+    conv.ask(new SimpleResponse({
+        speech: response,
+        text: response,
+    }));
+});
+
+
 /* HELPER FUNCTIONS */
 
-function buildResponseSinglePost(postTopic) {
+// function buildResponseSinglePost(postTopic) {
+//     return new Promise((resolve, reject) => {
+//
+//         const SEARCH_API_RESOURCE = `dismax-search?value=${postTopic}&start=0&size=1&minScore=1`;
+//         const SEARCH_API_URL = `http://${SEARCH_API_HOSTNAME}:${SEARCH_API_PORT}/${SEARCH_API_ENDPOINT}/${SEARCH_API_RESOURCE}`;
+//
+//         let post = {};
+//
+//         Request.get(SEARCH_API_URL, (error, response, body) => {
+//             if (error) {
+//                 logger.log({
+//                     level: 'error',
+//                     message: `Error: ${error}`
+//                 });
+//                 reject(`Sorry, I don't know the topic, ${postTopic}.`)
+//             }
+//             post = JSON.parse(body);
+//             post = post.ElasticsearchPosts[0];
+//             resolve(post);
+//         });
+//     });
+// }
+
+function getsPosts(postTopic, responseSize) {
     return new Promise((resolve, reject) => {
 
-        const SEARCH_API_RESOURCE = `dismax-search?value=${postTopic}&start=0&size=1&minScore=1`;
-        const SEARCH_API_URL = `http://${SEARCH_API_HOSTNAME}:${SEARCH_API_PORT}/${SEARCH_API_ENDPOINT}/${SEARCH_API_RESOURCE}`;
-
-        let post = {};
-
-        Request.get(SEARCH_API_URL, (error, response, body) => {
-            if (error) {
-                logger.log({
-                    level: 'error',
-                    message: `Error: ${error}`
-                });
-                reject(`Sorry, I don't know the topic, ${postTopic}.`)
-            }
-            post = JSON.parse(body);
-            post = post.ElasticsearchPosts[0];
-            resolve(post);
-        });
-    });
-}
-
-function buildResponseMultiplePosts(postTopic) {
-    return new Promise((resolve, reject) => {
-
-        const SEARCH_API_RESOURCE = `dismax-search?value=${postTopic}&start=0&size=3&minScore=1`;
+        const SEARCH_API_RESOURCE = `dismax-search?value=${postTopic}&start=0&size=${responseSize}&minScore=1`;
         const SEARCH_API_URL = `http://${SEARCH_API_HOSTNAME}:${SEARCH_API_PORT}/${SEARCH_API_ENDPOINT}/${SEARCH_API_RESOURCE}`;
 
         let posts = {};
@@ -218,7 +241,7 @@ function buildResponseMultiplePosts(postTopic) {
 function convertDate(dateString) {
     let post_date = new Date(dateString);
     let options = {year: 'numeric', month: 'long', day: 'numeric'};
-    return  post_date.toLocaleDateString('en-EN', options);
+    return post_date.toLocaleDateString('en-EN', options);
 }
 
 function topicNotFound(conv, postTopic) {
@@ -239,7 +262,6 @@ function topicNotFound(conv, postTopic) {
     }
 
 }
-
 
 
 /* ENTRY POINT */

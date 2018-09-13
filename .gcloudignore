@@ -25,3 +25,4 @@ package-lock.json
 .env.yaml
 index_test.js
 *.sh
+_prelims/
