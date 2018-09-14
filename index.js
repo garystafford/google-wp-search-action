@@ -35,7 +35,7 @@ const logger = createLogger({
     ]
 });
 
-const SUGGESTION_1 = 'tell me about kubernetes';
+const SUGGESTION_1 = 'tell me about Docker';
 const SUGGESTION_2 = 'help';
 const SUGGESTION_3 = 'cancel';
 
@@ -46,10 +46,9 @@ const SEARCH_API_ENDPOINT = process.env.SEARCH_API_ENDPOINT;
 /* INTENT HANDLERS */
 
 app.intent('Welcome Intent', conv => {
-    const WELCOME_TEXT_SHORT = 'What post topic are you interested in?';
-    const WELCOME_TEXT_LONG = `What post topic are you interested in? ` +
-        `You can say things like:  \n` +
-        ` _'Find a post about GCP'_  \n` +
+    const WELCOME_TEXT_SHORT = 'What topic are you interested in reading about?';
+    const WELCOME_TEXT_LONG = `You can say things like:  \n` +
+        ` _'find a post about GCP'_  \n` +
         ` _'I'd like to read about Kubernetes'_  \n` +
         ` _'I'm interested in Docker'_`;
 
@@ -69,7 +68,7 @@ app.intent('Welcome Intent', conv => {
 });
 
 app.intent('Fallback Intent', conv => {
-    const FACTS_LIST = "GCP, AWS, Azure, Kubernetes, Docker, Kafka, PCF";
+    const FACTS_LIST = "Kubernetes, Docker, Cloud, DevOps, AWS, Spring, Azure, Messaging";
     const HELP_TEXT_SHORT = 'Need a little help?';
     const HELP_TEXT_LONG = `Some popular topics include: ${FACTS_LIST}.`;
 
@@ -101,7 +100,7 @@ app.intent('Find Post Intent', async (conv, {topic}) => {
     let post = posts[0];
     let formattedDate = convertDate(post.post_date);
     const POST_SPOKEN = `The top result for '${postTopic}' is the post, '${post.post_title}', published ${formattedDate}`;
-    const POST_TEXT = `_'${post.post_excerpt}'_   \nPublished: ${formattedDate}`;
+    const POST_TEXT = `Description: ${post.post_excerpt}  \nPublished: ${formattedDate}`;
 
     conv.ask(new SimpleResponse({
         speech: POST_SPOKEN,
@@ -125,15 +124,15 @@ app.intent('Find Post Intent', async (conv, {topic}) => {
 
 app.intent('Find Multiple Posts Intent', async (conv, {topic}) => {
     let postTopic = topic.toString();
-
-    let posts = await getPosts(postTopic, 5);
+    let postCount = 3;
+    let posts = await getPosts(postTopic, postCount);
 
     if (posts.length < 1) {
         topicNotFound(conv, postTopic);
         return;
     }
 
-    const POST_SPOKEN = `Sure, here's posts about '${postTopic}'`;
+    const POST_SPOKEN = `I found a few posts about '${postTopic}'`;
 
     conv.ask(new SimpleResponse({
         speech: POST_SPOKEN,
@@ -168,8 +167,8 @@ app.intent('Find By ID Intent', async (conv, {topic}) => {
     }
 
     let formattedDate = convertDate(post.post_date);
-    const POST_SPOKEN = `Sure, here's Post ${postId}`;
-    const POST_TEXT = `_'${post.post_excerpt}'_   \nPublished: ${formattedDate}`;
+    const POST_SPOKEN = `Sure, here's that post`;
+    const POST_TEXT = `Description: ${post.post_excerpt}  \nPublished: ${formattedDate}`;
 
     conv.ask(new SimpleResponse({
         speech: POST_SPOKEN,
@@ -191,8 +190,13 @@ app.intent('Find By ID Intent', async (conv, {topic}) => {
     }
 });
 
-app.intent('actions.intent.OPTION', async (conv, params, option) => {
-    let postId = option.toString();
+app.intent('Option Intent', async (conv, params, option) => {
+    let postId;
+
+    if (option) {
+        postId = option;
+    }
+
     let post = await getPostById(postId);
 
     if (post === undefined) {
@@ -201,8 +205,8 @@ app.intent('actions.intent.OPTION', async (conv, params, option) => {
     }
 
     let formattedDate = convertDate(post.post_date);
-    const POST_SPOKEN = `Sure, here's Post ${postId}`;
-    const POST_TEXT = `_'${post.post_excerpt}'_   \nPublished: ${formattedDate}`;
+    const POST_SPOKEN = `Okay, I've found that post`;
+    const POST_TEXT = `Description: ${post.post_excerpt}  \nPublished: ${formattedDate}`;
 
     conv.ask(new SimpleResponse({
         speech: POST_SPOKEN,
