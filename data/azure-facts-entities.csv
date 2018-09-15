@@ -2,3 +2,6 @@
 "gcp","gcp","google cloud","google cloud platform"
 "aws","aws","amazon web services"
 "mongo","mongo","mongodb","mongo db"
+"docker","docker","containers","container"
+"kubernetes","kubernetes"
+"gke","gke","google kubernetes engine","kubernetes engine"
