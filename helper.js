@@ -24,7 +24,7 @@ const SEARCH_API_HOSTNAME = process.env.SEARCH_API_HOSTNAME;
 const SEARCH_API_PORT = process.env.SEARCH_API_PORT;
 const SEARCH_API_ENDPOINT = process.env.SEARCH_API_ENDPOINT;
 
-const Request = require("request");
+const rpn = require('request-promise-native');
 
 const winston = require('winston');
 const Logger = winston.Logger;
@@ -51,22 +51,24 @@ module.exports = class Helper {
      */
     getPostsByTopic(postTopic, responseSize = 1) {
         return new Promise((resolve, reject) => {
-
             const SEARCH_API_RESOURCE = `dismax-search?value=${postTopic}&start=0&size=${responseSize}&minScore=1`;
             const SEARCH_API_URL = `http://${SEARCH_API_HOSTNAME}:${SEARCH_API_PORT}/${SEARCH_API_ENDPOINT}/${SEARCH_API_RESOURCE}`;
             logger.info(`getPostsByTopic API URL: ${SEARCH_API_URL}`);
 
-            let posts = {};
+            let options = {
+                uri: SEARCH_API_URL,
+                json: true
+            };
 
-            Request.get(SEARCH_API_URL, (error, response, body) => {
-                if (error) {
-                    logger.error(`Error: ${error}`);
-                    reject(`Sorry, I could find any posts about ${postTopic}.`)
-                }
-                posts = JSON.parse(body);
-                posts = posts.ElasticsearchPosts;
-                resolve(posts);
-            });
+            rpn(options)
+                .then(function (posts) {
+                    posts = posts.ElasticsearchPosts;
+                    resolve(posts);
+                })
+                .catch(function (err) {
+                    logger.error(`Error: ${err}`);
+                    reject(err)
+                });
         });
     }
 
@@ -81,18 +83,21 @@ module.exports = class Helper {
             const SEARCH_API_URL = `http://${SEARCH_API_HOSTNAME}:${SEARCH_API_PORT}/${SEARCH_API_ENDPOINT}/${SEARCH_API_RESOURCE}`;
             logger.info(`getPostById API URL: ${SEARCH_API_URL}`);
 
-            let post = {};
+            let options = {
+                uri: SEARCH_API_URL,
+                json: true
+            };
 
-            Request.get(SEARCH_API_URL, (error, response, body) => {
-                if (error) {
-                    logger.error(`Error: ${error}`);
-                    reject(`Sorry, I could find post ${postId}.`)
-                }
-                post = JSON.parse(body);
-                post = post.ElasticsearchPosts;
-                logger.info(`getPostById Post: ${post}`);
-                resolve(post);
-            });
+            rpn(options)
+                .then(function (post) {
+                    post = post.ElasticsearchPosts;
+                    logger.info(post);
+                    resolve(post);
+                })
+                .catch(function (err) {
+                    logger.error(`Error: ${err}`);
+                    reject(err)
+                });
         });
     }
 
