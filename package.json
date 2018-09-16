@@ -9,8 +9,7 @@
     "node": ">=8"
   },
   "scripts": {
-    "start": "firebase serve --only functions:functionAzureFactsAction",
-    "deploy": "firebase deploy --only functions:functionAzureFactsAction"
+    "deploy": "sh ./deploy-cloud-function.sh"
   },
   "dependencies": {
     "@google-cloud/datastore": "^1.4.1",
@@ -22,6 +21,6 @@
     "firebase-functions": "^2.0.2",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.5",
-    "winston": "^2.4.4"
+    "winston": "2.4.4"
   }
 }

@@ -63,6 +63,7 @@ module.exports = class Helper {
             rpn(options)
                 .then(function (posts) {
                     posts = posts.ElasticsearchPosts;
+                    logger.info(`getPostsByTopic Posts: ${JSON.stringify(posts)}`);
                     resolve(posts);
                 })
                 .catch(function (err) {
@@ -91,7 +92,7 @@ module.exports = class Helper {
             rpn(options)
                 .then(function (post) {
                     post = post.ElasticsearchPosts;
-                    logger.info(post);
+                    logger.info(`getPostById Post: ${JSON.stringify(post)}`);
                     resolve(post);
                 })
                 .catch(function (err) {

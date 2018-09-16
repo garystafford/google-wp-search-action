@@ -56,7 +56,7 @@ app.intent('Welcome Intent', conv => {
 });
 
 app.intent('Fallback Intent', conv => {
-    const FACTS_LIST = "Kubernetes, Docker, Cloud, DevOps, AWS, Spring, Azure, Messaging";
+    const FACTS_LIST = "Kubernetes, Docker, Cloud, DevOps, AWS, Spring, Azure, Messaging, and GCP";
     const HELP_TEXT_SHORT = 'Need a little help?';
     const HELP_TEXT_LONG = `Some popular topics include: ${FACTS_LIST}.`;
 
@@ -87,7 +87,7 @@ app.intent('Find Post Intent', async (conv, {topic}) => {
 
     let post = posts[0];
     let formattedDate = helper.convertDate(post.post_date);
-    const POST_SPOKEN = `The top result for '${postTopic}' is the post, '${post.post_title}', published ${formattedDate}, with a relevancy score of ${post._score.toFixed(2)}`;
+    const POST_SPOKEN = `The top result for '${postTopic}' is the post, '${post.post_title}', published ${formattedDate}, with a relevance score of ${post._score.toFixed(2)}`;
     const POST_TEXT = `Description: ${post.post_excerpt}  \nPublished: ${formattedDate}  \nScore: ${post._score.toFixed(2)}`;
 
     conv.ask(new SimpleResponse({
@@ -131,7 +131,7 @@ app.intent('Find Multiple Posts Intent', async (conv, {topic}) => {
     posts.forEach(function (post) {
         itemsArray[post.ID] = {
             title: `Post ID ${post.ID}`,
-            description: `${post.post_title}  \nScore: ${post._score.toFixed(2)}`,
+            description: `${post.post_title.substring(0,80)}...  \nScore: ${post._score.toFixed(2)}`,
         };
     });
 
@@ -157,7 +157,7 @@ app.intent('Find By ID Intent', async (conv, {topic}) => {
 
     let formattedDate = helper.convertDate(post.post_date);
     const POST_SPOKEN = `Okay, I found that post`;
-    const POST_TEXT = `Description: ${post.post_excerpt}  \nPublished: ${formattedDate}  \nScore: ${post._score.toFixed(2)}`;
+    const POST_TEXT = `Description: ${post.post_excerpt}  \nPublished: ${formattedDate}`;
 
     conv.ask(new SimpleResponse({
         speech: POST_SPOKEN,
@@ -191,7 +191,7 @@ app.intent('Option Intent', async (conv, params, option) => {
 
     let formattedDate = helper.convertDate(post.post_date);
     const POST_SPOKEN = `Sure, here's that post`;
-    const POST_TEXT = `Description: ${post.post_excerpt}  \nPublished: ${formattedDate}  \nScore: ${post._score.toFixed(2)}`;
+    const POST_TEXT = `Description: ${post.post_excerpt}  \nPublished: ${formattedDate}`;
 
     conv.ask(new SimpleResponse({
         speech: POST_SPOKEN,
