@@ -12,7 +12,6 @@
     "deploy": "sh ./deploy-cloud-function.sh"
   },
   "dependencies": {
-    "@google-cloud/datastore": "^1.4.1",
     "@google-cloud/logging-winston": "^0.9.0",
     "actions-on-google": "^2.2.0",
     "dialogflow": "^0.6.0",

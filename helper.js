@@ -102,12 +102,22 @@ module.exports = class Helper {
         });
     }
 
+    /**
+     * Converts WordPress date to local pretty date format
+     * @param dateString
+     * @returns {string}
+     */
     convertDate(dateString) {
         let post_date = new Date(dateString);
         let options = {year: 'numeric', month: 'long', day: 'numeric'};
         return post_date.toLocaleDateString('en-EN', options);
     }
 
+    /**
+     * Respond to a topic that returns no results
+     * @param conv
+     * @param postTopic
+     */
     topicNotFound(conv, postTopic) {
         const NOT_FOUND_TEXT = `Sorry, I can't find any posts for the topic '${postTopic}'`;
 
@@ -124,6 +134,12 @@ module.exports = class Helper {
         }
     }
 
+
+    /**
+     * Respond to a post id that returns no results
+     * @param conv
+     * @param postId
+     */
     postIdNotFound(conv, postId) {
         const NOT_FOUND_TEXT = `Sorry, I can't find post ID ${postId}'`;
 
