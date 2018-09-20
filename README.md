@@ -1,15 +1,15 @@
 # Programmatic Ponderings Search Action for Google Assistant
-Project created for the post, [Building Serverless Actions for Google Assistant with Google Cloud Functions, Cloud Datastore, Cloud Storage](https://programmaticponderings.com/). In the post, we create an Action for Google Assistant using the ‘Actions on Google’ development platform, Google Cloud Platform’s serverless Cloud Functions, Cloud Datastore, and Cloud Storage, and the current LTS version of Node.js.
 
-## Preview
+This project was created for the post, [Integrating Search Capabilities with Actions for Google Assistant, using GKE and Elasticsearch](https://programmaticponderings.com/). This two-part post explores the enhancement of voice and text-based conversational interfaces by integrating a search and analytics engine. By interfacing an Action for Google Assistant conversational interface with Elasticsearch, we will improve the Action’s ability to provide relevant results to the end-user.
 
-Here is a brief [YouTube video preview](https://www.youtube.com/embed/DSONmyl_XdY) of the final Action for Google Assistant, we will explore in this post, running on an Apple iPhone 8.
+This repository contains the Action's serverless Cloud Function, detailed in the post, which communicates with Elasticsearch, via the [Spring Boot Service](https://github.com/garystafford/spring-wp-search).
 
-<a href="https://www.youtube.com/embed/DSONmyl_XdY" target="_blank"><img src="./pics/YouTube-Preview.jpg"
-alt="Azure Tech Facts Action for Google Assistant" /></a>
+## Google Assistant Preview
+
+Here is a brief [YouTube video preview](https://www.youtube.com/watch?v=k7TIv2NAIrc) of the final Action for Google Assistant, we will explore in this post, running on an Apple iPhone 8.
 
 ## Architecture
 
 The final architecture of the Action for Google Assistant will look as follows.
 
-![Google-Assistant-Architecture-Final](./pics/Google-Assistant-Architecture-Final.png)
+![Google-Assistant-Architecture-Final](./search-architecture.png)

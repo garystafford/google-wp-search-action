@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="39b9fd5c-b97e-4190-8df0-c9fc08b8b9f4" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/helper.js" beforeDir="false" afterPath="$PROJECT_DIR$/helper.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -17,44 +16,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="index.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/index.js">
+      <file leaf-file-name="azure-facts-entities.csv" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/data/azure-facts-entities.csv">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="342">
-              <caret line="219" selection-start-line="216" selection-end-line="219" />
-              <folding>
-                <element signature="n#!!doc" expanded="true" />
-              </folding>
+            <state relative-caret-position="105">
+              <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name=".env.yaml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/.env.yaml">
+      <file leaf-file-name="deploy-cloud-function.sh" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/deploy-cloud-function.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="30">
-              <caret line="2" column="16" lean-forward="true" selection-end-line="2" selection-end-column="42" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="package.json" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/package.json">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="210">
-              <caret line="14" selection-start-line="14" selection-end-line="14" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="helper.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/helper.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-53">
-              <caret line="105" column="52" selection-end-line="158" />
-              <folding>
-                <element signature="n#!!doc" expanded="true" />
-              </folding>
+            <state relative-caret-position="285">
+              <caret line="19" lean-forward="true" selection-end-line="19" />
             </state>
           </provider>
         </entry>
@@ -71,10 +46,10 @@
       <find>_score</find>
       <find>console</find>
       <find>logger</find>
-      <find>functions</find>
       <find>winst</find>
       <find>convertDate</find>
       <find>list</find>
+      <find>functions</find>
     </findStrings>
     <replaceStrings>
       <replace>'</replace>
@@ -212,12 +187,12 @@
       <option name="presentableId" value="Default" />
       <updated>1536509406611</updated>
       <workItem from="1536509409232" duration="51318000" />
-      <workItem from="1536955528811" duration="19222000" />
+      <workItem from="1536955528811" duration="19960000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="70540000" />
+    <option name="totallyTimeSpent" value="71278000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="810" extended-state="6" />
@@ -228,7 +203,8 @@
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Docker" order="7" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.32819074" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.3548387" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32819074" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Terminal" order="7" />
@@ -240,7 +216,6 @@
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Find" order="1" visible="true" weight="0.3548387" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -354,20 +329,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/data/azure-facts-entities.csv">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/deploy-cloud-function.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" selection-end-line="7" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
@@ -386,20 +347,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/helper.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-53">
-          <caret line="105" column="52" selection-end-line="158" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/index.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="342">
-          <caret line="219" selection-start-line="216" selection-end-line="219" />
+        <state relative-caret-position="226">
+          <caret line="213" column="3" lean-forward="true" selection-start-line="213" selection-start-column="3" selection-end-line="213" selection-end-column="3" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
           </folding>
@@ -409,14 +360,38 @@
     <entry file="file://$PROJECT_DIR$/.env.yaml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="30">
-          <caret line="2" column="16" lean-forward="true" selection-end-line="2" selection-end-column="42" />
+          <caret line="2" column="16" selection-end-line="2" selection-end-column="42" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/package.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="14" selection-start-line="14" selection-end-line="14" />
+        <state relative-caret-position="285">
+          <caret line="19" column="10" selection-end-line="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/helper.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-256">
+          <caret line="11" column="19" selection-start-line="11" selection-start-column="19" selection-end-line="11" selection-end-column="19" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/azure-facts-entities.csv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/deploy-cloud-function.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="19" lean-forward="true" selection-end-line="19" />
         </state>
       </provider>
     </entry>
