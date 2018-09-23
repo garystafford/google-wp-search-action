@@ -1,68 +1,7 @@
-GET _search
-{
-  "query": {
-    "match_all": {}
-  }
-}
-
-DELETE localhost8681-1/post/2
-
-DELETE _all
-
-PUT /localhost8681-1
-{
-  "settings": {
-    "analysis": {
-      "filter": {
-        "wp_synonym_filter": {
-          "type": "synonym",
-          "synonyms": [
-            "aks","azure kubernetes service"
-            "aws","amazon web services"
-            "azure","microsoft cloud"
-            "c#",csharp",c-sharp"
-            "chatbots","bots","conversational interface"
-            "eks","elastic container service for kubernetes"
-            "gce","google compute engine"
-            "gcp","google cloud","google cloud platform"
-            "gke","google kubernetes engine"
-            "iaas","infrastructure-as-a-service","infrastructure as a service"
-            "istio","service mesh"
-            "mongo","mongodb","mongo db","nosql","document database"
-            "mssql","sql server", "ms sql"
-            "paas",platform-as-a-service","software as a service"
-            "pcf","pivotal cloud foundry"
-            "saas","software-as-a-service","software as a service"
-            "vb","visual basic"
-          ]
-        }
-      },
-      "analyzer": {
-        "wp_synonyms": {
-          "tokenizer": "standard",
-          "filter": [
-            "lowercase",
-            "wp_synonym_filter"
-          ]
-        }
-      }
-    }
-  }
-}
-
-GET /localhost8681-1/_validate/query?explain
-{
-  "query": {
-    "match_phrase": {
-      "post_content": {
-        "query": "google cloud platform"
-      }
-    }
-  }
-}
-
-GET /localhost8681-1/_analyze
-{
-  "analyzer" : "wp_synonyms",
-  "text" : "What is GKE"
-}
+"aws","aws"
+"azure","azure"
+"docker","docker"
+"google cloud platform","google cloud platform"
+"kubernetes","kubernetes"
+"mongo db","mongo db"
+"service mesh","service mesh"
