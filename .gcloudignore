@@ -18,11 +18,11 @@ node_modules
 
 data/
 .idea/
+_prelims/
 *.md
-package-lock.json
 *.html
 *.txt
-.env.yaml
-index_test.js
 *.sh
-_prelims/
+*.yaml
+search-architecture.png
+package-lock.json

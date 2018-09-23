@@ -4,7 +4,7 @@
 # site: https://programmaticponderings.com
 # license: MIT License
 
-set -ex
+#set -ex
 
 # Set constants
 REGION="us-east1"
